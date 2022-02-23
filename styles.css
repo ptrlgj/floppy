@@ -24,7 +24,6 @@ div.bird {
     border-radius: 50%;
     top: 300px;
     left: 150px;
-    /* transition: 0.005s; */
 }
 
 div.obstacle {

@@ -4,8 +4,27 @@ function game(){
     const gameDiv = document.querySelector("div.game");
     let birdHeight = bird.offsetTop;
     let birdJump = -50
-
-
+    
+    function falling() {
+        if(!(birdHeight < 570)) gameOver()
+        birdHeight += 1;
+        bird.style.top =`${birdHeight}px`; 
+        // checkColision()
+    }
+    ()=>{
+        if(birdJump<=1 && birdJump>=-5 && (birdHeight - (-((1/2)*(birdJump*birdJump))))> 0 ) {
+            birdHeight -= (-((1/2)*(birdJump*birdJump)+1));
+            birdJump += 0.1
+        }
+        else birdHeight += 0.6;
+        if(birdHeight>=600){
+            clearInterval(gravity)
+        }
+        else{
+            bird.style.top = `${birdHeight}px`;
+        }
+    }
+    let gravity = setInterval(falling,5)
 
     const newObst = setInterval(()=>{
         const windowHeight = randHeight();
@@ -13,15 +32,19 @@ function game(){
         obstacleBot.classList.add("obstacle");
         obstacleBot.style.top = `${windowHeight}px`;
         obstacleBot.style.left = `400px`;
+        obstacleBot.id = `${windowHeight}`;
         gameDiv.appendChild(obstacleBot);
         const obstacleTop = document.createElement("div");
         obstacleTop.classList.add("obstacle");
+        obstacleTop.classList.add("top");
         obstacleTop.style.top = `${windowHeight-150-600}px`;
         obstacleTop.style.left = `400px`;
+        obstacleTop.id = `${windowHeight-150}`;
         gameDiv.appendChild(obstacleTop);
     },1800)
     const obstacles = setInterval(()=>{
         const obsts = gameDiv.querySelectorAll("div.obstacle");
+        const obstsTop = gameDiv.querySelectorAll("div.top");
         if(obsts){
             obsts.forEach(obst => {
                 const left = [...obst.style.left]
@@ -29,14 +52,34 @@ function game(){
                 obst.style.left = `${parseInt(left.join(""))-1}px`;
                 if(obst.style.left === "-80px" ) obst.parentNode.removeChild(obst);
             })
+            obstsTop.forEach(obst=>{
+                if(obst.offsetLeft <= 190 && obst.offsetLeft >= 70) checkColision(obst.id);
+            })
         }
     },5)
     function jump(){
-        birdJump = -1;
+        clearInterval(gravity)
+        // bird.classList.add("animatedJump");
+        bird.style.top = `${birdHeight - 90}px`;
+        birdHeight -= 90;
+        // bird.addEventListener("transitionend",()=>{
+            // bird.classList.remove("animatedJump");
+        // })
+        gravity = setInterval(falling,5)
     }
     function randHeight(){
         const rand = Math.floor(Math.random() * 225 + 225);
         return rand;
+    }
+    function checkColision(topVal){
+        console.log(bird.offsetTop,topVal)
+        if(bird.offsetTop <= parseInt(topVal) || (bird.offsetTop+30) >= (parseInt(topVal)+150)) gameOver();
+    }
+    function gameOver(){
+        clearInterval(newObst);
+        clearInterval(obstacles);
+        clearInterval(gravity)
+        gameDiv.removeEventListener("click",jump)
     }
     gameDiv.addEventListener("click",jump);
 }
