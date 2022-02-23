@@ -4,7 +4,7 @@ function game(){
     const gameDiv = document.querySelector("div.game");
     let birdHeight = bird.offsetTop;
     let birdJump = -50
-    
+    let score = 0;
     function falling() {
         if(!(birdHeight < 570)) gameOver()
         birdHeight += 1;
@@ -54,17 +54,14 @@ function game(){
             })
             obstsTop.forEach(obst=>{
                 if(obst.offsetLeft <= 190 && obst.offsetLeft >= 70) checkColision(obst.id);
+                if(bird.offsetLeft === obst.offsetLeft+81 ) updateScore()
             })
         }
     },5)
     function jump(){
         clearInterval(gravity)
-        // bird.classList.add("animatedJump");
         bird.style.top = `${birdHeight - 90}px`;
         birdHeight -= 90;
-        // bird.addEventListener("transitionend",()=>{
-            // bird.classList.remove("animatedJump");
-        // })
         gravity = setInterval(falling,5)
     }
     function randHeight(){
@@ -72,7 +69,6 @@ function game(){
         return rand;
     }
     function checkColision(topVal){
-        console.log(bird.offsetTop,topVal)
         if(bird.offsetTop <= parseInt(topVal) || (bird.offsetTop+30) >= (parseInt(topVal)+150)) gameOver();
     }
     function gameOver(){
@@ -80,6 +76,11 @@ function game(){
         clearInterval(obstacles);
         clearInterval(gravity)
         gameDiv.removeEventListener("click",jump)
+    }
+    function updateScore(){
+        const board = document.querySelector("div.score");
+        board.textContent = '';
+        board.textContent = ++score;
     }
     gameDiv.addEventListener("click",jump);
 }
