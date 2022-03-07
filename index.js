@@ -2,6 +2,8 @@ function game(){
     
     const bird = document.querySelector("div.bird");
     const gameDiv = document.querySelector("div.game");
+    const background = document.querySelector("div.background");
+
     let birdHeight = bird.offsetTop;
     let birdJump = -50
     let score = 0;
@@ -9,7 +11,6 @@ function game(){
         if(!(birdHeight < 570)) gameOver()
         birdHeight += 1;
         bird.style.top =`${birdHeight}px`; 
-        // checkColision()
     }
     ()=>{
         if(birdJump<=1 && birdJump>=-5 && (birdHeight - (-((1/2)*(birdJump*birdJump))))> 0 ) {
@@ -41,7 +42,7 @@ function game(){
         obstacleTop.style.left = `400px`;
         obstacleTop.id = `${windowHeight-150}`;
         gameDiv.appendChild(obstacleTop);
-    },1800)
+    },1800);
     const obstacles = setInterval(()=>{
         const obsts = gameDiv.querySelectorAll("div.obstacle");
         const obstsTop = gameDiv.querySelectorAll("div.top");
@@ -57,7 +58,37 @@ function game(){
                 if(bird.offsetLeft === obst.offsetLeft+81 ) updateScore()
             })
         }
-    },5)
+    },5);
+    const cloudGenerator = setInterval(()=>{
+        const cloud = newCloud();
+        background.appendChild(cloud);
+    },1000);
+    const backgroundFlow = setInterval(()=>{
+        const clouds = background.querySelectorAll("div.cloud");
+        if(clouds.length){
+            clouds.forEach(cl=>{
+                const left = [...cl.style.left];
+                left.splice((left.length-2),2);
+                const width = [...cl.style.width];
+                width.splice((width.length-2),2);
+                cl.style.left = `${parseInt(left.join(""))- 1}px`;
+                if(cl.style.left === `-${cl.style.width}`) cl.remove()
+            })
+        }
+    },10)
+    function newCloud() {
+        const cloud = document.createElement("div");
+        const width = randomValue(100,50);
+        cloud.classList.add("cloud");
+        cloud.style.width = `${width}px`;
+        cloud.style.height = `${width / 2}px`;
+        cloud.style.left = "400px";
+        cloud.style.top = `${randomValue(100,0)}px`
+        return cloud;
+    }
+    function randomValue(range, start){
+        return Math.floor(Math.random() * range + start);
+    }
     function jump(){
         clearInterval(gravity)
         bird.style.top = `${birdHeight - 90}px`;
